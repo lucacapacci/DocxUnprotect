@@ -1,13 +1,15 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 import os
 import zipfile
 import shutil
+import argparse
+import tempfile
 
 
-protected_docx = "/input/path/write_protected.docx"
-unprotected_docx = "/input/path/write_free.docx"
+
+
+
+VERSION = "1.0"
+NAME = "Docx Unprotect"
 
 
 def delete_folder(folder_path):
@@ -15,14 +17,8 @@ def delete_folder(folder_path):
 
 
 def generate_temp_folder_name():
-    base_string = "temp_dir_"
-    i = 0
-    while True:
-        temp_folder_name = "{0}{1}".format(base_string, i)
-        if temp_folder_name not in os.listdir('.'):
-            return temp_folder_name
-        else:
-            i += 1
+    temp_dir = tempfile.mkdtemp()
+    return temp_dir
 
 
 def create_docx(docx_path, temp_folder):
@@ -69,4 +65,28 @@ def main_unprotect(protected, unprotected):
     delete_folder(temp_folder)
 
 
-main_unprotect(protected=protected_docx, unprotected=unprotected_docx)
+if __name__ == "__main__":
+    print(fr'''
+  ,_   _,  _, ,  ,    ,  ,,  , ,_ ,_   _,  ___,_, _,___, 
+  | \,/ \,/   \_/     |  ||\ | |_)|_) / \,' | /_,/ ' |   
+ _|_/'\_/'\_  / \    '\__||'\|'| '| \'\_/   |'\_'\_  |   v{VERSION}
+'     '     `'   `       `'  ` '  '  `'     '   `  ` '   
+    ''')
+
+    parser = argparse.ArgumentParser(description=f"{NAME}: remove password-based editing restrictions from DOCX files.")
+    parser.add_argument("-v", "--version", help="show program version", action="store_true")
+    parser.add_argument("-p", "--protected", help="path of input protected docx file")
+    parser.add_argument("-u", "--unprotected", help="path of output unprotected docx file")
+    args = parser.parse_args()
+
+    if args.version:
+        exit()
+
+    if not args.protected or not args.unprotected:
+        parser.print_help()
+        exit()
+
+    protected_docx = args.protected
+    unprotected_docx = args.unprotected
+
+    main_unprotect(protected=protected_docx, unprotected=unprotected_docx)
